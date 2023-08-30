@@ -8,9 +8,11 @@
                 "${VULKAN_SDK}/Include"
             ],
             "defines": [
+                /*
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
+                */
             ],
             "windowsSdkVersion": "10.0.22000.0",
             "compilerPath": "cl.exe",
