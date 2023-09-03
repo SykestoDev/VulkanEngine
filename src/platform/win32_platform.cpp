@@ -4,13 +4,16 @@
 using namespace std;
 
 // Declare a global variable for the window handle
-HWND hwnd;
+    HWND hwnd;
+    VkInstance vkInstance;
+    VkContext vkContext;
+    HINSTANCE hInstance = GetModuleHandle(NULL);
 
 // Declare the window procedure
 LRESULT __stdcall WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Function to initialize the window and run the message loop
-bool InitializeWindow(HINSTANCE hInstance, int nCmdShow) {
+bool InitializeWindow(HWND* hwnd, HINSTANCE hInstance, int nCmdShow) {
     // Register the window class
     WNDCLASS wc = {};
     wc.lpfnWndProc = WindowProc;
@@ -21,11 +24,11 @@ bool InitializeWindow(HINSTANCE hInstance, int nCmdShow) {
     // Error check Window Registeration 
     if (!RegisterClass(&wc))
     {
-        MessageBoxA(hwnd, "Failed to Register Window Class.", "Error", MB_ICONEXCLAMATION | MB_OK);
+        MessageBoxA(*hwnd, "Failed to Register Window Class.", "Error", MB_ICONEXCLAMATION | MB_OK);
     }
 
     // Create the window
-    hwnd = CreateWindowEx(
+    *hwnd = CreateWindowEx(
         0,
         "MyWindowClass",   // Window class name
         "My_Vulkan_Engine",       // Window title
@@ -35,15 +38,16 @@ bool InitializeWindow(HINSTANCE hInstance, int nCmdShow) {
         NULL, NULL, hInstance, NULL
     );
 
+
     // Error check Window Creation
-    if (hwnd == NULL) {
+    if (*hwnd == NULL) {
         // Handle window creation failure
         OutputDebugStringA("Failed to create window.");
         return false;
     }
-
+    
     // Show the window
-    ShowWindow(hwnd, nCmdShow);
+    ShowWindow(*hwnd, nCmdShow);
 
     // Add debug output to indicate window creation success
     OutputDebugStringA("Window created successfully.");
@@ -79,17 +83,38 @@ int main() {
     // Add debug output to indicate main function entry
     OutputDebugStringA("Entering main function.");
 
-    HINSTANCE hInstance = GetModuleHandle(NULL);
     int nCmdShow = SW_SHOWDEFAULT;
 
     // Error check window Creation or if Shut down
-    if (!InitializeWindow(hInstance, nCmdShow))
+    if (!InitializeWindow(&hwnd, hInstance, nCmdShow))
     {
         return -1;
     }
     
-    VkContext vkContext = {};
-    if (!vk_Init(&vkContext))
+    /*
+    RECT rc;
+    GetWindowRect(hwnd, &rc);
+
+    // Set the window size to the screen size
+    int width = GetSystemMetrics(SM_CXSCREEN);
+    int height = GetSystemMetrics(SM_CYSCREEN);
+    SetWindowPos(hwnd, HWND_TOP, 0, 0, width, height, SWP_SHOWWINDOW);
+
+    // Set the window style to fullscreen
+    SetWindowLong(hwnd, GWL_STYLE, WS_POPUP);
+    // Update the window
+    UpdateWindow(hwnd);
+    */
+
+    // Iniitiate Vulkan
+    if (!vk_Init(&vkContext, hwnd))
+    {
+        return -1;
+    }
+    else // Add debug output to indicate VkInstance failed to create
+    OutputDebugStringA("VkInstance successfuly created.");
+
+    if (!vk_render(&vkContext))
     {
         return -1;
     }

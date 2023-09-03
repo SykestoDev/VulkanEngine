@@ -5,7 +5,7 @@ call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Buil
 
 SET includes=/I"src" /I"%VULKAN_SDK%/Include"
 SET links=/link /LIBPATH:%VULKAN_SDK%/Lib vulkan-1.lib user32.lib
-SET defines=/D DEBUG
+SET defines=/D DEBUG /D WINDOWS_BUILD
 
 
 echo "Building main..."
